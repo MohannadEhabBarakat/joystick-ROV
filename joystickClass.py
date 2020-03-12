@@ -2,12 +2,13 @@ import pygame
 import pickle
 from .motorSpeed import calcSpeed
 from .toServer import send
+from .cam import cam
 
 class joystickClass:
 
-        buttunMap={}
-        path="joys/"
-        led = False
+    buttunMap={}
+    path="joys/"
+    led = False
 
     def __init__(self, joyNum):
         pygame.init()
@@ -16,10 +17,10 @@ class joystickClass:
         self.selectJoy()
 
     def selectJoy(self):
-        name = raw_input("Enter JOY name: ")
+        name = input("Enter JOY name: ")
         if name.trim() =="":
             name = "main"
-        elif name,trim() == "reset":
+        elif name.trim() == "reset":
             self.reset()
         else:
             pickleIn = open(self.path+name,"rb")
@@ -30,11 +31,11 @@ class joystickClass:
             running = False
         elif event.type == pygame.JOYAXISMOTION:
             if event.axis ==0 or event.axis ==1:
-                axis01()
+                self.axis01()
             elif event.axis ==2 or event.axis ==3:
-                axis23()
+                self.axis23()
         elif event.type == pygame.JOYHATMOTION:
-            hat(event.value)
+            self.hat(event.value)
         elif event.type == pygame.JOYBUTTONDOWN:
             self.buttunMap[event.button]()
             # if event.button == 0:
@@ -66,7 +67,7 @@ class joystickClass:
         for i in buttonNames:
             self.setButtonMap(i)
 
-        name = raw_input("Enter JOY name: ")
+        name = input("Enter JOY name: ")
         pickleOut= open(self.path+name,"wb")
         pickle.dump(self.buttunMap,pickleOut)
         pickleOut.close()
@@ -112,7 +113,7 @@ class joystickClass:
         # code here
         send("LED="+str(not self.led))
 
-    def hat(value):
+    def hat(self,value):
         #code here
         if value==(1,0):
             send("forwardMini=1")
@@ -131,13 +132,13 @@ class joystickClass:
 
 
 
-    def axis01():
+    def axis01(self):
         #code here
         x=self.joy.get_axis(0)
         y=self.joy.get_axis(1)
         calcSpeed(x,y)
 
-    def axis23():
+    def axis23(self):
         #code here
         x=self.joy.get_axis(0)
         y=self.joy.get_axis(1)
@@ -149,16 +150,31 @@ class joystickClass:
 
 
 
+pygame.init()
 
 running = True
+joy1 = joystickClass(0)
+
 while running:
+
     for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            x=event.key
+        if x=="r":
+            joy1.reset()
+        elif x=="s":
+            joy1.selectJoy()
+        elif x == "p":
+            joy1.execute(event)
+            # joy2.execute(event)
+        elif x=="q":
+            print("Good bye b********")
+            break
+        elif x == "o":
+            print(event)
 
-        joy1.execute(event)
-        joy2.execute(event)
 
-
- pygame.quit()
+pygame.quit()
 
 
 

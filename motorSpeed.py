@@ -10,10 +10,10 @@ def calcSpeed(x,y):
     a2=-a
     b1=b
     b2=-b
-    send("a1="str(a1))
-    send("a2="str(a2))
-    send("b1="str(b1))
-    send("b2="str(b2))
+    send("a1="+ str(a1))
+    send("a2="+ str(a2))
+    send("b1="+ str(b1))
+    send("b2="+ str(b2))
     print("a: "+ str(a) + "     b: "+ str(b))
 
 # calcSpeed(0,1)
