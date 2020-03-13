@@ -1,8 +1,8 @@
 import pygame
 import pickle
-from .motorSpeed import calcSpeed
-from .toServer import send
-from .cam import cam
+from motorSpeed import calcSpeed
+from toServer import send
+from cam import cam
 
 class joystickClass:
 
@@ -11,20 +11,23 @@ class joystickClass:
     led = False
 
     def __init__(self, joyNum):
-        pygame.init()
+        # pygame.init()
+        print("INIT SAYS.....")
         self.joy = pygame.joystick.Joystick(joyNum) 
         self.joy.init()
         self.selectJoy()
+        print("DONE INIT")
 
     def selectJoy(self):
         name = input("Enter JOY name: ")
-        if name.trim() =="":
+        if name.strip() =="":
             name = "main"
-        elif name.trim() == "reset":
+        elif name.strip() == "reset":
             self.reset()
         else:
             pickleIn = open(self.path+name,"rb")
             self.buttunMap = pickle.load(pickleIn)
+            print(self.buttunMap)
 
     def execute(self, event):
         if event.type == pygame.QUIT:
@@ -37,7 +40,7 @@ class joystickClass:
         elif event.type == pygame.JOYHATMOTION:
             self.hat(event.value)
         elif event.type == pygame.JOYBUTTONDOWN:
-            self.buttunMap[event.button]()
+            getattr(self,self.buttunMap[event.button])()
             # if event.button == 0:
             #     but0()
             # elif event.button == 1:
@@ -63,14 +66,39 @@ class joystickClass:
             # elif event.button == 11:
             #      but11()
     def reset(self):
-        buttonNames=["R1","R2","L1","L2","Tri","Rec","X","O","Start","select","AnalogR","AnalogL"]
-        for i in buttonNames:
-            self.setButtonMap(i)
+        # buttonNames=["R1","R2","L1","L2","Tri","Rec","X","O","Start","select","AnalogR","AnalogL"]
+        # for (i=0;i <len(buttonNames);i++):
+        #     ii=buttonNames[i]
+        #     if event.type in [10]:
+        #         self.setButtonMap(ii)
+        #         print("a")
+        #         print(i)
+
+        #     else:
+        #         i=i-2
+        #         print(i)
+
+        self.buttunMap={
+            0: "R1",
+            1: "R2",
+            2: "L1",
+            3: "L2",
+            4: "Tri",
+            5: "Rec",
+            6: "X",
+            7: "O",
+            8: "start",
+            9: "select",
+            10: "AnalogR",
+            11: "AnalogL",
+        }
 
         name = input("Enter JOY name: ")
-        pickleOut= open(self.path+name,"wb")
-        pickle.dump(self.buttunMap,pickleOut)
-        pickleOut.close()
+        if(name is not ""):
+            pickleOut= open(self.path+name,"wb")
+            pickle.dump(self.buttunMap,pickleOut)
+            pickleOut.close()
+      
 
     def setButtonMap(self,but):
         print("priss "+but+"\n")
@@ -113,6 +141,9 @@ class joystickClass:
         # code here
         send("LED="+str(not self.led))
 
+    def AnalogR(self):
+        pass
+    
     def hat(self,value):
         #code here
         if value==(1,0):
@@ -151,26 +182,45 @@ class joystickClass:
 
 
 pygame.init()
+WIDTH=600
+HEIGHT=480
+SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 
 running = True
 joy1 = joystickClass(0)
-
+x=""
 while running:
 
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
-            x=event.key
+            x=chr(event.key)
+            print("x = "+ x)
+        elif event.type in [7,9,10,11] and x not in ["p"] : x="o"
+        # else: pass
+        
+        if event.type in [7,9,10,11]: print("joy")
+
+        print(event.type)
+
         if x=="r":
+            print("reset case")
             joy1.reset()
+            x="o"
         elif x=="s":
+            print("select case")
             joy1.selectJoy()
+            x="o"
         elif x == "p":
+            print("play case")
             joy1.execute(event)
             # joy2.execute(event)
-        elif x=="q":
+        elif x=="q":  
             print("Good bye b********")
+            pygame.quit()
+            running = False
             break
         elif x == "o":
+            print("output case")
             print(event)
 
 

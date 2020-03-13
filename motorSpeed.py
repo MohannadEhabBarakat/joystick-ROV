@@ -1,5 +1,5 @@
 from math import sin, cos 
-from .toServer import send
+from toServer import send
 
 def calcSpeed(x,y):
     b=(y*cos(120)/sin(120)+x)/(cos(60)-cos(120)/sin(120))*170

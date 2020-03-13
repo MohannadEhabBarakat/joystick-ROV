@@ -1,4 +1,4 @@
-from .toServer import send
+from toServer import send
 
 def cam(y):
     if y>0:
